@@ -20,7 +20,7 @@ jobs:
             cp -R /tmp/site/PowerHouse-Auction-Hub-final2-publish/. .
             rm -rf /tmp/site PowerHouse-Auction-Hub-final2-security-hardened.zip
           else
-            exit 0
+            echo "No site bundle to unpack; applying cleanup only."
           fi
           # Remove the legacy Hub pages permanently.
           rm -rf hub PowerHouse-Auction-Hub-final2-publish/hub
