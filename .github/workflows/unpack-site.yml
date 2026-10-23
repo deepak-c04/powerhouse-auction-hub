@@ -11,10 +11,17 @@ jobs:
       - uses: actions/checkout@v4
       - name: Expand the updated site
         run: |
-          if [ ! -f PowerHouse-Auction-Hub-final2-security-hardened.zip ]; then exit 0; fi
-          unzip -q PowerHouse-Auction-Hub-final2-security-hardened.zip -d /tmp/site
-          cp -R /tmp/site/PowerHouse-Auction-Hub-final2-publish/. .
-          rm -rf /tmp/site PowerHouse-Auction-Hub-final2-security-hardened.zip
+          if [ -f PowerHouse-Hub-GitHubPages.zip ]; then
+            unzip -q PowerHouse-Hub-GitHubPages.zip -d /tmp/hub
+            cp -R /tmp/hub/. .
+            rm -rf /tmp/hub PowerHouse-Hub-GitHubPages.zip
+          elif [ -f PowerHouse-Auction-Hub-final2-security-hardened.zip ]; then
+            unzip -q PowerHouse-Auction-Hub-final2-security-hardened.zip -d /tmp/site
+            cp -R /tmp/site/PowerHouse-Auction-Hub-final2-publish/. .
+            rm -rf /tmp/site PowerHouse-Auction-Hub-final2-security-hardened.zip
+          else
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
