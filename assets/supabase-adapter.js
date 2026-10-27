@@ -8,17 +8,26 @@
   function snapshot(row) {
     return { exists: !!row, data: function () { return row ? row.data : null; }, id: row ? row.path.split("/").pop() : "" };
   }
+  function retry(task, attempts) {
+    attempts = attempts || 3;
+    return task().catch(function (error) {
+      if (attempts <= 1) throw error;
+      return new Promise(function (resolve) { setTimeout(resolve, (4 - attempts) * 350); }).then(function () {
+        return retry(task, attempts - 1);
+      });
+    });
+  }
   function read(path) {
-    return client.from("ph_documents").select("path,data").eq("path", path).maybeSingle().then(function (r) {
+    return retry(function () { return client.from("ph_documents").select("path,data").eq("path", path).maybeSingle(); }).then(function (r) {
       if (r.error) throw r.error;
       return snapshot(r.data);
     });
   }
   function write(path, data, merge) {
     var p = merge ? read(path).then(function (s) { return Object.assign({}, s.data() || {}, data); }) : Promise.resolve(data);
-    return p.then(function (value) { return client.from("ph_documents").upsert({ path: path, data: value, updated_at: new Date().toISOString() }, { onConflict: "path" }); }).then(function (r) { if (r.error) throw r.error; });
+    return p.then(function (value) { return retry(function () { return client.from("ph_documents").upsert({ path: path, data: value, updated_at: new Date().toISOString() }, { onConflict: "path" }); }); }).then(function (r) { if (r.error) throw r.error; });
   }
-  function remove(path) { return client.from("ph_documents").delete().eq("path", path).then(function (r) { if (r.error) throw r.error; }); }
+  function remove(path) { return retry(function () { return client.from("ph_documents").delete().eq("path", path); }).then(function (r) { if (r.error) throw r.error; }); }
   function doc(path) {
     return { get: function () { return read(path); }, set: function (d) { return write(path, d, false); }, update: function (d) { return write(path, d, true); }, delete: function () { return remove(path); } };
   }
