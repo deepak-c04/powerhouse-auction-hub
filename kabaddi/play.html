@@ -475,7 +475,7 @@ async function claim(t){spec=false;if(!canW||!uid)return toast("You need Contrib
  if(ex)delete seats[ex.team];seats[t]=seat;render();
  var r=ref("seats/"+t);
  try{var a=await r.acquire({holder:uid,ttlMs:4000});if(!a.acquired){pend=null;delete seats[t];if(mine0)seats[mine0.team]=mine0;render();return toast("Someone is picking that team.")}
-  await Promise.all([ex?ref("seats/"+ex.team).delete():0,r.set(seat)])}catch(e){pend=null;delete seats[t];if(mine0)seats[mine0.team]=mine0;render();toast("Could not pick that team.")}}
+  await Promise.all([ex?ref("seats/"+ex.team).delete():0,r.set(seat)]);await r.release(uid)}catch(e){try{await r.release(uid)}catch(_){}pend=null;delete seats[t];if(mine0)seats[mine0.team]=mine0;render();toast("Could not pick that team.")}}
 async function start(){if(!isHost())return;try{await ref("state/s").update({phase:"auction",lot:0,bid:0,leader:"",ver:st.ver+1,dlMs:cfg.secs*1000+6000,last:null});await db.doc("rooms/"+code).update({phase:"auction"})}catch(e){toast("Could not start.")}}
 async function bidNow(){if(!mine||st.hold)return;var n=minNext();if(!valid(mine.team,n)||st.leader===mine.team)return;lastBid=st.ver*100000+n;$("bid").disabled=true;try{await ref("bids/"+mine.team).set({lot:st.lot,amt:n,t:Date.now(),uid:uid})}catch(e){lastBid=0;toast("Bid failed.")}}
 async function hostEval(){if(busy||!st||st.phase!=="auction"||st.hold||!isHost())return;var best=null;for(var t in bids){var b=bids[t],s=seats[t];if(b.lot!==st.lot||!s||s.uid!==b.uid||t===st.leader||b.amt<minNext()||!valid(t,b.amt))continue;if(!best||b.amt>best.amt||(b.amt===best.amt&&b.t<best.t))best={t:t,amt:b.amt}}
