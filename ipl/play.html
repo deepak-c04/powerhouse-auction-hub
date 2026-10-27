@@ -541,7 +541,13 @@ function show(v){["home","lobby","auc","res"].forEach(function(x){$("v-"+x).clas
 function seatOf(u){for(var t in seats)if(seats[t].uid===u)return seats[t];return null}
 function render(){if(!cfg||!st)return;sbRender();mine=seatOf(uid);$("del").style.display=isHost()?"":"none";
  if(st.phase==="lobby")lobby();else if(st.phase==="auction")auc();else res()}
-function lobby(){show("lobby");$("lc").textContent=code;$("lcfg").textContent=(cfg.vis)+" · purse "+cfg.purse+" Cr · squad "+cfg.squad+" · "+order.length+" players · "+cfg.secs+"s timer · host "+cfg.hostName;
+var film=null,filmKey="";
+function filmFace(p){var ini=(p.n||"").split(/\s+/).map(function(w){return w.charAt(0)}).join("").replace(/[^A-Za-z]/g,"").slice(0,2).toUpperCase();return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect width="120" height="120" fill="#766a58"/><text x="60" y="74" text-anchor="middle" font-family="Arial Narrow,Arial,sans-serif" font-weight="700" font-size="42" fill="#e7d9bd">'+ini+'</text></svg>')}
+function filmLobby(){if(!window.PHFilmstrip||!order.length)return;var k=code+":"+order.length+":"+order[0].i;if(film&&filmKey===k)return;if(film){film.destroy();film=null}var host=$("film");
+ if(!host){var c=document.createElement("div");c.className="card";c.id="filmc";c.style.marginTop="14px";c.innerHTML='<div class="lbl">Up first in this auction</div><div id="film" class="ph-film"></div><p class="note" style="margin-top:8px">'+(matchMedia("(hover: none)").matches?"Drag up or down":"Hover, scroll or use the arrow keys")+' to browse the opening lots.</p>';$("v-lobby").appendChild(c);host=$("film")}
+ var RL={BAT:"Batter",BOWL:"Bowler",AR:"All-rounder",WK:"Wicket-keeper",RAI:"Raider",DEF:"Defender"},por={},pro=order.slice(0,12).map(function(p){var key="p"+p.i;por[key]=IMG[p.i]||filmFace(p);return [p.n,p.t+" · "+(RL[p.r]||p.r)+" · "+fmt(p.p),key]});
+ film=PHFilmstrip.mount(host,{portraits:por,profiles:pro,speed:1,scale:1,opacity:1,hue:0,saturation:1,brightness:1});filmKey=k}
+function lobby(){show("lobby");filmLobby();$("lc").textContent=code;$("lcfg").textContent=(cfg.vis)+" · purse "+cfg.purse+" Cr · squad "+cfg.squad+" · "+order.length+" players · "+cfg.secs+"s timer · host "+cfg.hostName;
  $("lt").innerHTML=TEAMS.map(function(t){var s=seats[t[0]],m=s&&s.uid===uid;return '<div class="tm'+(s&&!m?' taken':'')+(m?' mine':'')+'" data-t="'+t[0]+'" style="--c:'+t[1]+';--k:'+(t[2]||"#fff")+'">'+(PH[t[0]]?'<span class="ph2" style="background-image:url('+PH[t[0]]+')"></span>':'')+'<span class="sk">'+SKY[t[0]]+'</span><span class="cr">'+CREST[t[0]]+'</span><span class="tx">'+t[0]+'<small>'+(s?esc(s.name)+(m?" (you)":""):"free")+'</small></span></div>'}).join("");
  var ks=Object.keys(seats);$("lp").innerHTML=ks.length?ks.map(function(k){return '<div class="row"><b>'+esc(k)+'</b><span>'+esc(seats[k].name)+'</span><span></span></div>'}).join(""):'<span class="note">Nobody has picked a team yet.</span>';
  var sp=$("spec");if(sp){sp.classList.toggle("on",spec&&!mine);sp.textContent=spec&&!mine?"👁 Spectating (tap a team to bid instead)":"👁 Spectate only (no team)"}$("go").style.display=isHost()?"":"none";$("gn").textContent=isHost()?(ks.length<2?"Only "+ks.length+" bidder seated. You can still start, but it works best with two or more.":"Ready when you are."+(spec&&!mine?" You are spectating as host.":"")):"Waiting for the host to start.";$("go").disabled=!ks.length}
@@ -1739,5 +1745,5 @@ if(C&&C.querySelector&&(C.querySelector(".pc")||C.id==="cg"||C.id==="pl")){
 </script>
 <style id=vox-css>#vox{position:fixed;right:14px;bottom:58px;z-index:90;border:0;border-radius:14px;background:linear-gradient(180deg,#232938,#151a25);color:#fff;padding:8px 14px;font:700 12px Inter,system-ui,sans-serif;cursor:pointer;opacity:.9;box-shadow:0 1px 0 rgba(255,255,255,.14) inset,0 4px 0 #05070b,0 12px 18px -6px rgba(0,0,0,.75)}#vox:hover{opacity:1}#vox:active{transform:translateY(2px)}body.d3on #vox{bottom:calc(var(--d3dh,170px) + 54px)}@media(max-width:520px){#vox{right:10px}}</style>
 
-<link rel="stylesheet" href="../assets/ux.css"><script src="../assets/ux.js" defer></script>
+<link rel="stylesheet" href="../assets/ux.css"><script src="../assets/character-filmstrip.js" defer></script><script src="../assets/ux.js" defer></script>
 </body></html>

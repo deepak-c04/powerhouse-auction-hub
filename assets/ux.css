@@ -149,3 +149,7 @@ p, li, figcaption { text-wrap: pretty; }
 
 /* ------------------------------------------------ BlurHash placeholders */
 [data-blurhash] { background-size: cover; background-position: center; }
+
+/* ------------------------------------- auction room: character filmstrip */
+.ph-film { position: relative; height: 420px; border-radius: 12px; overflow: hidden; }
+@media (max-width: 650px) { .ph-film { height: 480px; } }
