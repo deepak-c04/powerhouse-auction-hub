@@ -1,6 +1,12 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Power House Auction Hub</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<meta property="og:title" content="Power House Auction Hub">
+<meta property="og:description" content="Live player auctions for IPL, WPL, Kabaddi and BBL. Pick a league, open a room and bid with friends.">
+<meta property="og:image" content="https://deepak-c04.github.io/powerhouse-auction-hub/og-image.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:url" content="https://deepak-c04.github.io/powerhouse-auction-hub/"><meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="description" content="Live player auctions for IPL, WPL, Kabaddi and BBL in a night stadium. Pick a league, open a room and bid with friends.">
 <!--
 Power House Auction Hub. The 3-D scene, page engine and styles are a modified
@@ -195,6 +201,10 @@ h1,h2,h3{ font-weight:400; margin:0; letter-spacing:-.005em; }
 .hero-top .eyebrow .dot{ width:5px; height:5px; border-radius:50%; background:var(--vermilion); box-shadow:0 0 10px var(--vermilion); }
 .hero h1{ margin-bottom:18px; }
 .hero-sub{ max-width:322px; text-shadow:0 1px 26px rgba(3,6,8,.95); }
+/* scrim so the copy reads over the 3-D wordmark behind it */
+.hero-top::before{ content:""; position:absolute; z-index:-1; pointer-events:none;
+  inset:-24px -90px -36px calc(-1 * var(--pad, 24px));
+  background:radial-gradient(ellipse at 30% 50%, rgba(3,6,8,.78) 0%, rgba(3,6,8,.55) 45%, rgba(3,6,8,0) 75%); }
 .hero-spacer{ flex:1 1 auto; min-height:clamp(140px,26vh,300px); }
 .hero-foot{ padding-bottom:clamp(22px,4.2vh,42px); position:relative; z-index:2; }
 .hero-cue{ display:flex; align-items:center; justify-content:flex-end; gap:12px; margin-bottom:14px;
@@ -212,7 +222,7 @@ h1,h2,h3{ font-weight:400; margin:0; letter-spacing:-.005em; }
 .chip b{ display:block; font-size:10px; font-weight:500; letter-spacing:.2em; text-transform:uppercase;
   color:var(--bone-dim); margin-bottom:6px; transition:color .4s;
   text-shadow:0 1px 16px rgba(3,6,8,.9); }
-.chip p{ margin:0; font-size:11px; line-height:1.5; color:#7d8781; max-width:22ch;
+.chip p{ margin:0; font-size:11px; line-height:1.5; color:#a7b2ab; max-width:22ch;
   transition:color .4s; }
 .chip:hover .num{ color:var(--ember); transform:translate3d(0,-2px,0); }
 .chip:hover b{ color:var(--bone); }
