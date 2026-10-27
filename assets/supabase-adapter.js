@@ -43,8 +43,21 @@
     });
   }
   function release(path, holder) { return read(path + "/__lock").then(function (s) { var old = s.data(); if (old && old.holder === holder) return remove(path + "/__lock"); }); }
+  function watch(path, next, fail) {
+    var active = true, last = "";
+    function refresh() {
+      read(path).then(function (value) {
+        if (!active) return;
+        var signature = JSON.stringify(value && value.exists ? value.data() : null);
+        if (signature !== last) { last = signature; next(value); }
+      }).catch(function (error) { if (active && fail) fail(error); });
+    }
+    refresh();
+    var timer = setInterval(refresh, 1500);
+    return function () { active = false; clearInterval(timer); };
+  }
   function doc(path) {
-    return { get: function () { return read(path); }, set: function (data) { return write(path, data, false); }, update: function (data) { return write(path, data, true); }, delete: function () { return remove(path); }, acquire: function (opts) { return acquire(path, opts); }, release: function (holder) { return release(path, holder); } };
+    return { get: function () { return read(path); }, set: function (data) { return write(path, data, false); }, update: function (data) { return write(path, data, true); }, delete: function () { return remove(path); }, onSnapshot: function (next, fail) { return watch(path, next, fail); }, acquire: function (opts) { return acquire(path, opts); }, release: function (holder) { return release(path, holder); } };
   }
   function query(prefix, filters, max) {
     return request(API + "?select=path,data&path=like." + encodeURIComponent(prefix + "/*") + "&order=path.asc").then(function (rows) {
