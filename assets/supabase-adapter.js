@@ -28,8 +28,24 @@
     return p.then(function (value) { return retry(function () { return client.from("ph_documents").upsert({ path: path, data: value, updated_at: new Date().toISOString() }, { onConflict: "path" }); }); }).then(function (r) { if (r.error) throw r.error; });
   }
   function remove(path) { return retry(function () { return client.from("ph_documents").delete().eq("path", path); }).then(function (r) { if (r.error) throw r.error; }); }
+  function acquire(path, opts) {
+    opts = opts || {};
+    var lockPath = path + "/__lock", now = Date.now(), ttl = opts.ttlMs || 4000;
+    return read(lockPath).then(function (s) {
+      var old = s.data();
+      if (old && old.holder && old.expiresAt > now && old.holder !== opts.holder) return { acquired: false };
+      return write(lockPath, { holder: opts.holder, expiresAt: now + ttl }, false).then(function () { return { acquired: true }; });
+    });
+  }
+  function release(path, holder) {
+    var lockPath = path + "/__lock";
+    return read(lockPath).then(function (s) {
+      var old = s.data();
+      if (old && old.holder === holder) return remove(lockPath);
+    });
+  }
   function doc(path) {
-    return { get: function () { return read(path); }, set: function (d) { return write(path, d, false); }, update: function (d) { return write(path, d, true); }, delete: function () { return remove(path); } };
+    return { get: function () { return read(path); }, set: function (d) { return write(path, d, false); }, update: function (d) { return write(path, d, true); }, delete: function () { return remove(path); }, acquire: function (o) { return acquire(path, o); }, release: function (holder) { return release(path, holder); } };
   }
   function query(prefix, filters, max) {
     var q = client.from("ph_documents").select("path,data").like("path", prefix + "/%");
