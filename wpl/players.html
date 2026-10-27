@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><script>addEventListener("pagereveal",function(e){var v=e.viewTransition;v&&[v.ready,v.finished,v.updateCallbackDone].forEach(function(p){p&&p.catch(function(){})})})</script><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="stylesheet" href="../assets/hub-theme.css">
@@ -389,7 +389,7 @@ if(C&&C.querySelector&&(C.querySelector(".pc")||C.id==="cg"||C.id==="pl")){
   s.classList.toggle("on",on);s.setAttribute("aria-pressed",on);s.setAttribute("aria-label",(on?"Remove ":"Add ")+nm(c)+(on?" from":" to")+" watchlist")});
   var emp=C.querySelector(".phx-empty");if(C.classList.contains("phx-wl")&&!C.querySelector(".phx-starred")){if(!emp){emp=d.createElement("div");emp.className="phx-empty";emp.textContent="No players saved yet. Tap the star on a card to add one.";C.appendChild(emp)}}else if(emp)emp.remove();
   applySort();count()}
- function toggle(s){var c=s.closest(".pc");if(!c)return;var k=id(c);WL[k]=!WL[k];if(!WL[k])delete WL[k];save();phxToast(WL[k]?nm(c).replace(/\b\w/g,function(x){return x.toUpperCase()})+" saved to watchlist":"Removed from watchlist");mark()}
+ function toggle(s){var c=s.closest(".pc");if(!c)return;var k=id(c);WL[k]=!WL[k];if(!WL[k])delete WL[k];save();if(!WL[k]&&window.UX)UX.toast("Removed from watchlist",{undo:function(){WL[k]=true;save();mark()}});else phxToast(WL[k]?nm(c).replace(/\b\w/g,function(x){return x.toUpperCase()})+" saved to watchlist":"Removed from watchlist");mark()}
  C.addEventListener("click",function(e){var s=e.target.closest(".phx-star");if(!s)return;e.stopPropagation();e.preventDefault();toggle(s)},true);
  C.addEventListener("keydown",function(e){var s=e.target.closest&&e.target.closest(".phx-star");if(s&&(e.key==="Enter"||e.key===" ")){e.stopPropagation();e.preventDefault();toggle(s)}},true);
  var q=d.getElementById("q"),host=q&&q.parentNode;
@@ -456,4 +456,5 @@ new MutationObserver(function(){if(on)sel=sel.filter(function(c){return C.contai
 }catch(e){}})();
 </script>
 
+<link rel="stylesheet" href="../assets/ux.css"><script src="../assets/ux.js" defer></script>
 </body></html>

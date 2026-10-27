@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><script>addEventListener("pagereveal",function(e){var v=e.viewTransition;v&&[v.ready,v.finished,v.updateCallbackDone].forEach(function(p){p&&p.catch(function(){})})})</script><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="stylesheet" href="../assets/hub-theme.css">
@@ -281,7 +281,7 @@ body.urgent::after{content:"";position:fixed;inset:0;z-index:82;pointer-events:n
    <button class="btn big" id="mk">Create room</button></div>
   <div><div class="card"><div class="lbl">Join room</div><h2 style="font-size:40px;margin:4px 0 14px">HAVE A CODE?</h2>
    <input class="fld" id="jc" maxlength="12" placeholder="PH-XXXXX" autocomplete="off"><button class="btn big" id="jb">Join</button></div>
-   <div class="card" style="margin-top:14px"><div class="lbl">Live public rooms</div><div id="pub" class="side" style="margin-top:8px"><span class="note">None right now.</span></div></div></div>
+   <div class="card" style="margin-top:14px"><div class="lbl">Live public rooms</div><div id="pub" class="side" style="margin-top:8px" aria-busy="true"><div class="ux-sk" aria-hidden="true"><i></i><i></i><i></i></div></div></div></div>
  </div></div>
 <div id="v-lobby" class="view">
  <div class="grid g2"><div class="card"><div class="lbl">Room code (share this)</div><div class="code" id="lc"></div><p class="note" id="lcfg"></p><p class="note">Friends open this page, tap Join, and enter the code. Each person picks a different franchise.</p>
@@ -409,7 +409,7 @@ function xi(a){var s=a.slice().sort(function(x,y){return y.rt-x.rt}),pick=[],u={
  var t=Math.max(0,pick.reduce(function(x,p){return x+p.rt},0)-m.length*6);return{pick:pick,bench:s.filter(function(p){return !u[p.i]}),miss:m,tot:t,avg:t/(pick.length||1)}}
 function grade(a){return a>=84?"S":a>=79?"A":a>=74?"B":a>=69?"C":"D"}
 /* state */
-var db,user,uid=null,canW=null,name="",code="",cfg=null,st=null,seats={},bids={},hostDoc=null,order=[],subs=[],busy=false,dl=0,ver=-1,mine=null,lastBid=0,pubUn=null,opt={vis:"Public",purse:"30",squad:"18",lots:"176",secs:"12"};
+var db,user,uid=null,canW=null,name="",code="",cfg=null,st=null,seats={},bids={},hostDoc=null,order=[],subs=[],busy=false,dl=0,ver=-1,mine=null,lastBid=0,seenK={},optB=null,pubDraw=null,pubQ=null,pendDel={},pubUn=null,opt={vis:"Public",purse:"30",squad:"18",lots:"176",secs:"12"};
 function rng(s){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return function(){h+=0x6D2B79F5;var t=Math.imul(h^h>>>15,1|h);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function makeOrder(c,n){var R=rng(c),tiers=[300,150,50],out=[];tiers.forEach(function(t){var g=POOL.filter(function(p){return p.p===t});for(var i=g.length-1;i>0;i--){var j=Math.floor(R()*(i+1));var x=g[i];g[i]=g[j];g[j]=x}out=out.concat(g)});
  POOL.forEach(function(p){if(out.indexOf(p)<0)out.push(p)});return out.slice(0,n)}
@@ -548,8 +548,8 @@ function auc(){show("auc");var p=lotP();if(!p){return}upRender();
  $("ln").textContent=r2()?"ROUND 2 · UNSOLD · Lot "+(st.lot-order.length+1)+" of "+st.o2.length:"Lot "+(st.lot+1)+" of "+order.length;if(st.nr)$("ln").textContent+=" · ROUND 2 FOR UNSOLD PLAYERS NEXT";$("lnm").textContent=p.n;$("lt2").textContent=p.t+" · "+({BAT:"BATTER",BOWL:"BOWLER",AR:"ALL-ROUNDER",WK:"KEEPER"}[p.r]||p.r)+(p.o?" · OVERSEAS":" · AUSTRALIA");$("lbase").textContent="Base "+fmt(p.p)+" · Cat "+p.c;
  var im=IMG[p.i];if(im){$("li").style.display="block";$("li").src=im;$("lini").textContent=""}else{$("li").style.display="none";$("lini").textContent=p.n.split(" ").filter(function(w){return w.length>1}).map(function(w){return w[0]}).join("").slice(0,2)}
  $("lst").innerHTML='<div><b>'+p.c+'</b><span>CATEGORY</span></div><div><b>'+(p.o?p.nat:"AUS")+'</b><span>FROM</span></div>';
- var b=st.leader?st.bid:0,B=$("bn"),txt=st.leader?fmt(st.bid):"No bids";if(B.textContent!==txt){B.textContent=txt;B.classList.remove("pop");void B.offsetWidth;B.classList.add("pop")}
- $("bl").textContent=st.leader?"Leading: "+st.leader+" ("+esc(seats[st.leader]?seats[st.leader].name:"")+")":"Be the first to bid at "+fmt(p.p);
+ var b=st.leader?st.bid:0,B=$("bn"),txt=optOn()?fmt(optB.amt):st.leader?fmt(st.bid):"No bids";if(B.textContent!==txt){B.textContent=txt;B.classList.remove("pop");void B.offsetWidth;B.classList.add("pop")}
+ $("bl").textContent=optOn()?"Your bid of "+fmt(optB.amt)+" is in · confirming…":st.leader?"Leading: "+st.leader+" ("+esc(seats[st.leader]?seats[st.leader].name:"")+")":"Be the first to bid at "+fmt(p.p);
  var n=minNext(),can=!!mine&&canW!==false&&st.leader!==mine.team&&valid(mine.team,n)&&lastBid!==st.ver*100000+n&&!st.hold;
  $("bid").textContent=mine?"BID "+fmt(n)+" as "+mine.team:"Spectating";$("bid").disabled=!can;var vs=$("vskip"),nd=skipNeed(),vc=skipCount();vs.style.display=mine&&st.leader!==mine.team&&!st.hold?"":"none";vs.disabled=myVote();vs.textContent=st.leader?(myVote()?"Passed ✓ ("+vc+"/"+nd+") · sells when all others pass":"Pass on "+fmt(st.bid)+" ("+vc+"/"+nd+")"):(myVote()?"Voted to skip ✓ ("+vc+"/"+nd+")":"Vote to skip ("+vc+"/"+nd+")");var sk=$("skip");sk.style.display=isHost()?"":"none";if(!st.leader||skipArm===0){}if(sk.dataset.lot!==String(st.lot)){sk.dataset.lot=st.lot;skipArm=0;sk.textContent="Skip player (host)"}
  $("bnote").textContent=!mine?"You are spectating this auction.":st.leader===mine.team?"You are the highest bidder.":!valid(mine.team,n)?"You cannot afford this bid, or it would break the squad or overseas limit.":"";
@@ -657,9 +657,10 @@ async function claim(t){spec=false;if(!canW||!uid)return toast("You need Contrib
  try{var a=await r.acquire({holder:uid,ttlMs:4000});if(!a.acquired){pend=null;delete seats[t];if(mine0)seats[mine0.team]=mine0;render();return toast("Someone is picking that team.")}
   await Promise.all([ex?ref("seats/"+ex.team).delete():0,r.set(seat)]);await r.release(uid)}catch(e){try{await r.release(uid)}catch(_){}pend=null;delete seats[t];if(mine0)seats[mine0.team]=mine0;render();toast("Could not pick that team.")}}
 async function start(){if(!isHost())return;try{await ref("state/s").update({phase:"auction",lot:0,bid:0,leader:"",ver:st.ver+1,dlMs:cfg.secs*1000+6000,last:null});await db.doc("rooms/"+code).update({phase:"auction"})}catch(e){toast("Could not start.")}}
-async function bidNow(){if(!mine||st.hold)return;var n=minNext();if(!valid(mine.team,n)||st.leader===mine.team)return;lastBid=st.ver*100000+n;$("bid").disabled=true;try{await ref("bids/"+mine.team).set({lot:st.lot,amt:n,t:Date.now(),uid:uid})}catch(e){lastBid=0;toast("Bid failed.")}}
-async function hostEval(){if(busy||!st||st.phase!=="auction"||st.hold||!isHost())return;var best=null;for(var t in bids){var b=bids[t],s=seats[t];if(b.lot!==st.lot||!s||s.uid!==b.uid||t===st.leader||b.amt<minNext()||!valid(t,b.amt))continue;if(!best||b.amt>best.amt||(b.amt===best.amt&&b.t<best.t))best={t:t,amt:b.amt}}
- if(!best)return;busy=true;try{await ref("state/s").update({bid:best.amt,leader:best.t,ver:st.ver+1,dlMs:cfg.secs*1000})}catch(e){}busy=false;hostEval()}
+async function bidNow(){if(!mine||st.hold)return;var n=minNext();if(!valid(mine.team,n)||st.leader===mine.team)return;lastBid=st.ver*100000+n;$("bid").disabled=true;var bk=uid+":"+st.lot+":"+n,bt=Date.now(),ok=false;optB={v:st.ver,lot:st.lot,amt:n,t:bt};document.body.classList.add("ux-pending");render();for(var ba=0;ba<2&&!ok;ba++){try{await ref("bids/"+mine.team).set({lot:st.lot,amt:n,t:bt,uid:uid,k:bk});ok=true}catch(e){}}document.body.classList.remove("ux-pending");if(!ok){optB=null;lastBid=0;toast("Bid failed.");render()}}
+function optOn(){return !!(optB&&st&&optB.v===st.ver&&optB.lot===st.lot&&Date.now()-optB.t<6000)}
+async function hostEval(){if(busy||!st||st.phase!=="auction"||st.hold||!isHost())return;var best=null;for(var t in bids){var b=bids[t],s=seats[t];if((b.k&&seenK[b.k])||b.lot!==st.lot||!s||s.uid!==b.uid||t===st.leader||b.amt<minNext()||!valid(t,b.amt))continue;if(!best||b.amt>best.amt||(b.amt===best.amt&&b.t<best.t))best={t:t,amt:b.amt,k:b.k}}
+ if(!best)return;busy=true;try{await ref("state/s").update({bid:best.amt,leader:best.t,ver:st.ver+1,dlMs:cfg.secs*1000});if(best.k)seenK[best.k]=1}catch(e){}busy=false;hostEval()}
 var skipArm=0,skips={};
 function skipTag(){return st.leader?st.leader+":"+st.bid:""}
 function skipNeed(){var n=Object.keys(seats).length;return Math.max(1,st&&st.leader?n-1:n)}
@@ -699,12 +700,13 @@ $("again").onclick=function(){roomGone()};$("del").onclick=delClick;
 /* boot */
 (async function(){
  try{db=window.phSupabaseDb;user=window.phSupabaseUser;if(!db||!user)throw 0}catch(e){db=null}
- if(!db){$("nodb").hidden=false;$("who").textContent="Offline";$("mk").disabled=true;$("jb").disabled=true;return}
+ if(!db){$("nodb").hidden=false;$("pub").removeAttribute("aria-busy");$("pub").innerHTML='<span class="note">Offline.</span>';$("who").textContent="Offline";$("mk").disabled=true;$("jb").disabled=true;return}
  try{uid=user?await user.id():null;canW=user?await user.can("data.write"):null}catch(e){}
  $("who").textContent=uid?"Connected":"Connected (read only)";if(canW===false||!uid){$("ro").hidden=false}
- try{pubUn=db.collection("rooms").where("vis","==","Public").limit(40).onSnapshot(function(q){var L=q.docs.map(function(d){return d.data()}).filter(function(r){return r.phase!=="ended"&&Date.now()-r.created<43200000});
-  $("pub").innerHTML=L.length?L.map(function(r){return '<div class="row" style="grid-template-columns:1fr auto"><span><b>'+esc(r.code)+'</b> · '+esc(r.hostName)+' · '+'A$'+(r.purse/10).toFixed(1)+'M · '+esc(r.seated||0)+' seated · '+esc(r.phase)+'</span><span><button class="btn" style="padding:6px 14px" data-c="'+esc(r.code)+'">Join</button>'+(uid&&r.hostId===uid?'<button class="btn g" style="padding:6px 12px;margin-left:6px" data-x="'+esc(r.code)+'">Delete</button>':"")+'</span></div>'}).join(""):'<span class="note">None right now.</span>'})}catch(e){}
- $("pub").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;if(b.dataset.x){if(b.dataset.arm!=="1"){b.dataset.arm="1";b.textContent="Sure?";setTimeout(function(){b.dataset.arm="";b.textContent="Delete"},3000);return}deleteRoom(b.dataset.x,b.dataset.x===code);return}if(b.dataset.c)join(b.dataset.c)})
+ var PK="ph-pub-"+(location.pathname.split("/").slice(-2,-1)[0]||"x");try{var pc=JSON.parse(localStorage.getItem(PK)||"null");if(pc&&pc.h&&Date.now()-pc.t<600000){$("pub").innerHTML=pc.h;$("pub").classList.add("ux-stale")}}catch(e){}
+ try{pubUn=db.collection("rooms").where("vis","==","Public").limit(40).onSnapshot(pubDraw=function(q){pubQ=q;var L=q.docs.map(function(d){return d.data()}).filter(function(r){return r.phase!=="ended"&&Date.now()-r.created<43200000&&!pendDel[r.code]});
+  $("pub").innerHTML=L.length?L.map(function(r){return '<div class="row" style="grid-template-columns:1fr auto"><span><b>'+esc(r.code)+'</b> · '+esc(r.hostName)+' · '+'A$'+(r.purse/10).toFixed(1)+'M · '+esc(r.seated||0)+' seated · '+esc(r.phase)+'</span><span><button class="btn" style="padding:6px 14px" data-c="'+esc(r.code)+'">Join</button>'+(uid&&r.hostId===uid?'<button class="btn g" style="padding:6px 12px;margin-left:6px" data-x="'+esc(r.code)+'">Delete</button>':"")+'</span></div>'}).join(""):'<span class="note">None right now.</span>';$("pub").classList.remove("ux-stale");$("pub").removeAttribute("aria-busy");try{localStorage.setItem(PK,JSON.stringify({t:Date.now(),h:$("pub").innerHTML}))}catch(e){}})}catch(e){}
+ $("pub").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;if(b.dataset.x&&window.UX&&pubQ){var dx=b.dataset.x;pendDel[dx]=1;pubDraw(pubQ);UX.toast("Room "+dx+" deleted",{undo:function(){delete pendDel[dx];pubDraw(pubQ)},commit:function(){deleteRoom(dx,dx===code).then(function(){delete pendDel[dx]})}});return}if(b.dataset.x){if(b.dataset.arm!=="1"){b.dataset.arm="1";b.textContent="Sure?";setTimeout(function(){b.dataset.arm="";b.textContent="Delete"},3000);return}deleteRoom(b.dataset.x,b.dataset.x===code);return}if(b.dataset.c)join(b.dataset.c)})
 })();
 window.__phgame={join:join};
 })();
@@ -1660,7 +1662,7 @@ if(C&&C.querySelector&&(C.querySelector(".pc")||C.id==="cg"||C.id==="pl")){
   s.classList.toggle("on",on);s.setAttribute("aria-pressed",on);s.setAttribute("aria-label",(on?"Remove ":"Add ")+nm(c)+(on?" from":" to")+" watchlist")});
   var emp=C.querySelector(".phx-empty");if(C.classList.contains("phx-wl")&&!C.querySelector(".phx-starred")){if(!emp){emp=d.createElement("div");emp.className="phx-empty";emp.textContent="No players saved yet. Tap the star on a card to add one.";C.appendChild(emp)}}else if(emp)emp.remove();
   applySort();count()}
- function toggle(s){var c=s.closest(".pc");if(!c)return;var k=id(c);WL[k]=!WL[k];if(!WL[k])delete WL[k];save();phxToast(WL[k]?nm(c).replace(/\b\w/g,function(x){return x.toUpperCase()})+" saved to watchlist":"Removed from watchlist");mark()}
+ function toggle(s){var c=s.closest(".pc");if(!c)return;var k=id(c);WL[k]=!WL[k];if(!WL[k])delete WL[k];save();if(!WL[k]&&window.UX)UX.toast("Removed from watchlist",{undo:function(){WL[k]=true;save();mark()}});else phxToast(WL[k]?nm(c).replace(/\b\w/g,function(x){return x.toUpperCase()})+" saved to watchlist":"Removed from watchlist");mark()}
  C.addEventListener("click",function(e){var s=e.target.closest(".phx-star");if(!s)return;e.stopPropagation();e.preventDefault();toggle(s)},true);
  C.addEventListener("keydown",function(e){var s=e.target.closest&&e.target.closest(".phx-star");if(s&&(e.key==="Enter"||e.key===" ")){e.stopPropagation();e.preventDefault();toggle(s)}},true);
  var q=d.getElementById("q"),host=q&&q.parentNode;
@@ -1680,4 +1682,5 @@ if(C&&C.querySelector&&(C.querySelector(".pc")||C.id==="cg"||C.id==="pl")){
 </script>
 <style id=vox-css>#vox{position:fixed;right:14px;bottom:58px;z-index:90;border:0;border-radius:14px;background:linear-gradient(180deg,#232938,#151a25);color:#fff;padding:8px 14px;font:700 12px Inter,system-ui,sans-serif;cursor:pointer;opacity:.9;box-shadow:0 1px 0 rgba(255,255,255,.14) inset,0 4px 0 #05070b,0 12px 18px -6px rgba(0,0,0,.75)}#vox:hover{opacity:1}#vox:active{transform:translateY(2px)}body.d3on #vox{bottom:calc(var(--d3dh,170px) + 54px)}@media(max-width:520px){#vox{right:10px}}</style>
 
+<link rel="stylesheet" href="../assets/ux.css"><script src="../assets/ux.js" defer></script>
 </body></html>
